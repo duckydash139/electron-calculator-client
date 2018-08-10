@@ -21,11 +21,11 @@ const createWindow = async () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 300,
-    height: 350
+    height: 390
   })
 
   // and load the index.html of the app.
-  mainWindow.loadURL(`file://${path.join(__dirname, '../index.html')}`)
+  mainWindow.loadURL(`file://${path.join(__dirname, '../../static/index.html')}`)
 
   // Open the DevTools.
   if (isDevMode) {
