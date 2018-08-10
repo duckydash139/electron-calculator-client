@@ -52,5 +52,4 @@ export default class Cloud {
       return error
     }
   }
-
 }
