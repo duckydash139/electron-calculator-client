@@ -4,6 +4,8 @@ import { enableLiveReload } from 'electron-compile'
 import path from 'path'
 import dotenv from 'dotenv'
 
+import ipc from './ipc'
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
@@ -20,8 +22,8 @@ if (isDevMode) {
 const createWindow = async () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 300,
-    height: 390
+    width: process.env.WINDOW_WIDTH,
+    height: process.env.WINDOW_HEIGHT
   })
 
   // and load the index.html of the app.
@@ -66,3 +68,4 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
+ipc.init()
