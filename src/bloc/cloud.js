@@ -6,14 +6,14 @@ import qs from 'querystring'
 const store = new Store()
 
 export default class Cloud {
-  constructor () {
+  constructor() {
     this.clientKey = null
 
     this.init()
   }
 
-  init () {
-    if (store.get('clientKey') === null) {
+  init() {
+    if (!store.get('clientKey')) {
       const generatedKey = uuid.v4()
       this.clientKey = generatedKey
       // Save clientKey in localStorage
@@ -24,32 +24,65 @@ export default class Cloud {
   }
 
   // Save data on server
-  async save (a, b, operator, result) {
+  async save(file) {
     // Prepare data format
-    const data = { a, b, operator, result }
+    const payload = {
+      client_id: this.clientKey,
+      file: {
+        a: file.a.toString(),
+        b: file.b.toString(),
+        operator: file.operator,
+        result: file.result.toString()
+      }
+    }
     // Connect to API
     try {
-      const { status } = await axios.post(`${process.env.SERVER_PATH}`, qs.stringify(data))
+      // sign up new client
+      const { status } = await axios.post(
+        `${process.env.SERVER_PATH}`,
+        payload,
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      )
 
       if (status === 201) {
         return true
+      } else if (status === 202) {
+        const { status } = await axios.put(
+          `${process.env.SERVER_PATH}/${this.clientKey}`,
+          { file },
+          {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }
+        )
+
+        if (status === 200) {
+          return true
+        }
       }
 
       return false
     } catch (error) {
-      return error
+      return false
     }
   }
 
   // Load data from server
-  async load () {
+  async load() {
     // Connect to API
     try {
-      const { data } = await axios.get(`${process.env.SERVER_PATH}/${this.clientKey}`)
+      const { data } = await axios.get(
+        `${process.env.SERVER_PATH}/${this.clientKey}`
+      )
 
       return data
     } catch (error) {
-      return error
+      return false
     }
   }
 }

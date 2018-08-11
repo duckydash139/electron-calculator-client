@@ -25,6 +25,7 @@ export default class App extends Component {
     this.handleEvent = this.handleEvent.bind(this)
     this.onLoad = this.onLoad.bind(this)
     this.onSave = this.onSave.bind(this)
+    this.status = React.createRef()
   }
 
   handleEvent (event) {
@@ -40,23 +41,38 @@ export default class App extends Component {
     })
   }
 
-  onLoad () {
+  async onLoad () {
     if (this.state.drive) {
-      const { a, b, operator, result } = cloudDrive.load()
-      this.setState({ a, b, operator, result })
+      bus.emit('status', ['Loading!..'])
+      const data = await cloudDrive.load()
+
+      if (data) {
+        const { a, b, operator, result } = data
+        this.setState({ a, b, operator, result })
+
+        bus.emit('status', ['Loaded!', 'has-text-success'])
+      } else {
+        bus.emit('status', ['Cannot load the data at this time', 'has-text-danger'])
+      }
     } else {
       ipcRenderer.send('open-file-dialog')
     }
   }
 
-  onSave () {
+  async onSave () {
     if (this.state.drive) {
-      const isSaved = cloudDrive.save()
+      bus.emit('status', ['Loading!..'])
+      const isSaved = await cloudDrive.save({
+        a: this.state.a,
+        b: this.state.b,
+        operator: this.state.operator,
+        result: this.state.result
+      })
 
       if (isSaved) {
-        const status = document.getElementById('status')
-        status.innerHTML = 'Saved!'
-        status.className = 'has-text-success'
+        bus.emit('status', ['Saved!', 'has-text-success'])
+      } else {
+        bus.emit('status', ['Cannot save the data at this time', 'has-text-danger'])
       }
     } else {
       ipcRenderer.send('save-dialog', {
@@ -72,6 +88,10 @@ export default class App extends Component {
     bus.on('loadedFile', ({ a, b, operator, result }) => {
       this.setState({ a, b, operator, result })
     })
+    bus.on('status', ([ status, className ]) => {
+      this.status.current.innerHTML = status
+      this.status.current.className = className
+    })
   }
 
   render () {
@@ -83,7 +103,7 @@ export default class App extends Component {
         <TextField type="text" name="result" value={this.state.result} handleChange={this.handleEvent} readOnly />
         <CloudDrive checked={this.state.drive} changeValue={this.handleEvent} /><br /><br />
         <div>
-          <span id="status">&nbsp;</span>
+          <span ref={this.status}>&nbsp;</span>
           <div className="is-pulled-right">
             <button className="button is-warning" name="load" onClick={this.onLoad}>Load</button>&nbsp;
             <button className="button is-info" name="save" onClick={this.onSave}>Save</button>
