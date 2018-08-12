@@ -1,18 +1,17 @@
 import uuid from 'uuid'
 import Store from 'electron-store'
 import axios from 'axios'
-import qs from 'querystring'
 
 const store = new Store()
 
 export default class Cloud {
-  constructor() {
+  constructor () {
     this.clientKey = null
 
     this.init()
   }
 
-  init() {
+  init () {
     if (!store.get('clientKey')) {
       const generatedKey = uuid.v4()
       this.clientKey = generatedKey
@@ -24,7 +23,7 @@ export default class Cloud {
   }
 
   // Save data on server
-  async save(file) {
+  async save (file) {
     // Prepare data format
     const payload = {
       client_id: this.clientKey,
@@ -73,7 +72,7 @@ export default class Cloud {
   }
 
   // Load data from server
-  async load() {
+  async load () {
     // Connect to API
     try {
       const { data } = await axios.get(

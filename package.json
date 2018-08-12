@@ -56,7 +56,8 @@
     "electron-store": "^2.0.0",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
-    "react-hot-loader": "^4.3.4"
+    "react-hot-loader": "^4.3.4",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "babel-plugin-transform-async-to-generator": "^6.24.1",

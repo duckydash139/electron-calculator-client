@@ -44,10 +44,9 @@ export default class App extends Component {
   async onLoad () {
     if (this.state.drive) {
       bus.emit('status', ['Loading!..'])
-      const data = await cloudDrive.load()
+      const { a, b, operator, result } = await cloudDrive.load()
 
-      if (data) {
-        const { a, b, operator, result } = data
+      if (a && b && operator && result) {
         this.setState({ a, b, operator, result })
 
         bus.emit('status', ['Loaded!', 'has-text-success'])
