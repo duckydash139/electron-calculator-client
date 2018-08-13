@@ -2,7 +2,6 @@ import { app, BrowserWindow } from 'electron'
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer'
 import { enableLiveReload } from 'electron-compile'
 import path from 'path'
-import dotenv from 'dotenv'
 
 import ipc from './ipc'
 
@@ -13,17 +12,14 @@ let mainWindow
 const isDevMode = process.execPath.match(/[\\/]electron/)
 
 if (isDevMode) {
-  dotenv.config({ path: '.dev.env' })
   enableLiveReload({ strategy: 'react-hmr' })
-} else {
-  dotenv.config({ path: '.prod.env' })
 }
 
 const createWindow = async () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: process.env.WINDOW_WIDTH,
-    height: process.env.WINDOW_HEIGHT
+    width: 300,
+    height: 390
   })
 
   // and load the index.html of the app.

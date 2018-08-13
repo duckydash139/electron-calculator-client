@@ -15,8 +15,8 @@ You can check the server repo at [electron-calculator-server](https://github.com
 # install dependencies
 $ yarn install
 
-# set up SERVER_PATH in .env files
-Example: SERVER_PATH=localhost/api/storage
+# set up server url in config.json
+Example: {"server": "localhost:27017/storage"}
 
 # run development mode
 $ yarn start

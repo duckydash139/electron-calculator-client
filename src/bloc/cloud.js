@@ -2,6 +2,8 @@ import uuid from 'uuid'
 import Store from 'electron-store'
 import axios from 'axios'
 
+import config from '../../config.json'
+
 const store = new Store()
 
 export default class Cloud {
@@ -38,7 +40,7 @@ export default class Cloud {
     try {
       // sign up new client
       const { status } = await axios.post(
-        `${process.env.SERVER_PATH}`,
+        `${config.server}`,
         payload,
         {
           headers: {
@@ -50,15 +52,7 @@ export default class Cloud {
       if (status === 201) {
         return true
       } else if (status === 202) {
-        const { status } = await axios.put(
-          `${process.env.SERVER_PATH}/${this.clientKey}`,
-          { file },
-          {
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          }
-        )
+        const { status } = await axios.put(`${config.server}/${this.clientKey}`, { file }, { headers: { 'Content-Type': 'application/json' } })
 
         if (status === 200) {
           return true
@@ -75,9 +69,7 @@ export default class Cloud {
   async load () {
     // Connect to API
     try {
-      const { data } = await axios.get(
-        `${process.env.SERVER_PATH}/${this.clientKey}`
-      )
+      const { data } = await axios.get(`${config.server}/${this.clientKey}`)
 
       return data
     } catch (error) {
